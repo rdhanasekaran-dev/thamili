@@ -5,11 +5,9 @@ import com.dogood.thamili.model.PostDetails;
 import com.dogood.thamili.model.ProfileDetails;
 import com.dogood.thamili.service.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -20,17 +18,15 @@ public class PostDetailsController {
     private FirebaseService firebaseService;
 
     // save profile details in firebase
-    @RequestMapping("/put")
-    @PostMapping()
+    @PostMapping("/put")
     public String savePostDetails(@RequestBody PostDetails postDetails){
         return firebaseService.savePostDetails(postDetails);
     }
 
     // get profile details from firebase
-    @RequestMapping("/get")
-    @PostMapping()
-    public ProfileDetails getProfileDetails(@RequestBody IdModel id) throws ExecutionException, InterruptedException {
-        return firebaseService.getUserDetails(id.getId());
+    @GetMapping("/all")
+    public List<PostDetails> getPostDetails() throws ExecutionException, InterruptedException {
+        return firebaseService.getAllPosts();
     }
 
 

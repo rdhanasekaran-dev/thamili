@@ -3,13 +3,12 @@ package com.dogood.thamili.service;
 import com.dogood.thamili.model.PostDetails;
 import com.dogood.thamili.model.ProfileDetails;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -44,33 +43,15 @@ public class FirebaseService {
         return "success";
     }
 
-    // get image details in firebase
-    public ProfileDetails getImageDetails(String id) throws ExecutionException, InterruptedException {
-        Firestore dbFirestore=FirestoreClient.getFirestore();
-        DocumentReference documentReference=dbFirestore.collection("profile").document(id);
-        ApiFuture<DocumentSnapshot> documentSnapshotApiFuture=documentReference.get();
-        DocumentSnapshot documentSnapshot=documentSnapshotApiFuture.get();
-        ProfileDetails profileDetails=null;
-        if(documentSnapshot.exists()){
-            profileDetails=documentSnapshot.toObject(ProfileDetails.class);
-            return profileDetails;
-        }else {
-            return null;
+    // get all posts
+    public List<PostDetails> getAllPosts() throws ExecutionException, InterruptedException {
+        Firestore dbFireStore= FirestoreClient.getFirestore();
+        List<PostDetails> postsList=new ArrayList<>();
+        ApiFuture<QuerySnapshot> future=dbFireStore.collection("post").get();
+        List<QueryDocumentSnapshot> documentSnapshots=future.get().getDocuments();
+        for(QueryDocumentSnapshot documentSnapshot:documentSnapshots){
+            postsList.add(documentSnapshot.toObject(PostDetails.class));
         }
-    }
-
-    // get all Images details in firebase
-    public ProfileDetails getAllImageDetails(String id) throws ExecutionException, InterruptedException {
-        Firestore dbFirestore=FirestoreClient.getFirestore();
-        DocumentReference documentReference=dbFirestore.collection("profile").document(id);
-        ApiFuture<DocumentSnapshot> documentSnapshotApiFuture=documentReference.get();
-        DocumentSnapshot documentSnapshot=documentSnapshotApiFuture.get();
-        ProfileDetails profileDetails=null;
-        if(documentSnapshot.exists()){
-            profileDetails=documentSnapshot.toObject(ProfileDetails.class);
-            return profileDetails;
-        }else {
-            return null;
-        }
+        return postsList;
     }
 }
